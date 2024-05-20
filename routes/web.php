@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Siswa;
+use App\Models\Mahasiswa;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,23 +19,68 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/about', function () {
-    $nama = "Saliman";
-    $jenis_kelamin = "Laki laki";
-    $pendidikan_trakhir = "SMK";
-    $pekerjaan = "Bekerja di PT.Pindad";
-    $alamat = "cibaduyut";
-    return view('data_diri', compact('nama','jenis_kelamin','pendidikan_trakhir','pekerjaan','alamat')); 
+Route::get('siswa', function () {
+    return Siswa::all();
 });
 
-Route::get('/sendiri', function () {
-    $nama = "Rishky Saliman";
-    $umur = "17";
-    $tanggal_lahir ="12-02-2006";
-    $cita_cita = "TNI/POLRI";
-    $kesibukan = "Bekerja di PT.Pindad";
-    $hobi = "Berkendara motor";
-    $kemampuan = "Bisa berubah menjadi spiderman";
-    $pesan  = "Tetap menjadi generasi yang bisa mempertahan kan budaya, dan semangat mengejar cita cita";
-    return view('data_saliman', compact('nama','umur','tanggal_lahir','cita_cita','kesibukan','hobi','kemampuan','pesan')); 
+Route::get('daftarsiswa', function () {
+    return view('daftar-siswa');
+});
+
+Route::get('daftarwarga', function () {
+    return view('daftar-warga');
+});
+
+Route::get('relasi-1', function () {
+
+    $mahasiswa = App\Models\Mahasiswa::where('nim','=','1015015072')->first();
+
+    #tampilkan nama wali mahasiswa
+    return $mahasiswa->wali->nama;
+});
+
+Route::get('relasi-2', function () {
+
+    $mahasiswa = App\Models\Mahasiswa::where('nim','=','1015015088')->first();
+
+    #tampilkan nama wali mahasiswa
+    return $mahasiswa->dosen->nama;
+});
+
+Route::get('relasi-3', function () {
+
+    $dosen = App\Models\Dosen::where('nama','=','yulianto')->first();
+
+    #tampilkan nama wali mahasiswa
+    foreach ($dosen->mahasiswa as$data) {
+        echo "<li>Nama : <strong>" . $data->nama . "</strong> -" . $data->nim . "</li>";
+    }
+});
+
+Route::get('relasi-4', function () {
+
+    $novay = App\Models\Mahasiswa::where('nama','=','Noviyanto rachmadi')->first();
+
+    #tampilkan nama wali mahasiswa
+    foreach ($novay->hobi as$data) {
+        echo '<li>' . $data->hobi .  '</li>';
+    }
+});
+
+Route::get('relasi-5', function () {
+
+    $mandi_hujan = App\Models\Hobi::where('hobi','=','Mandi Hujan')->first();
+
+    #tampilkan nama wali mahasiswa
+    foreach ($mandi_hujan->mahasiswa as $data) {
+        echo '<li>Nama :' . $data->nama . '<strong>' . $data->nim . '</strong></li>';
+    }
+});
+
+Route::get('eloquent', function () {
+
+    $mahasiswa = App\Models\Mahasiswa::with('wali', 'dosen', 'hobi')->get();
+
+    // tampilkan
+    return view('eloquent', compact('mahasiswa'));
 });
